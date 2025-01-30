@@ -22,3 +22,19 @@ class VideoRepository:
         db.commit()
         db.refresh(video)
         return video
+
+    @staticmethod
+    async def update_transcription(
+            db: Session,
+            video_id: int,
+            transcription_details: dict
+    ) -> Optional[Video]:
+        video = db.query(Video).filter(Video.id == video_id).first()
+        if video:
+            video.transcription = transcription_details["text"]  # Keep original field
+            video.transcription_details = transcription_details  # Add detailed data
+            video.status = ProcessingStatus.COMPLETED
+            video.processed_time = datetime.utcnow()
+            db.commit()
+            db.refresh(video)
+        return video

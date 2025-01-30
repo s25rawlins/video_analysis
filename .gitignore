@@ -1,5 +1,7 @@
 echo "venv/
 __pycache__/
+*.mp4
+*.wav
 .env
 .idea/
 *.pyc" > .gitignore

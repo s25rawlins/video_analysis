@@ -64,6 +64,25 @@ class Video(Base):
     # User Management
     created_by = Column(String, index=True)
 
+    transcription_details = Column(JSONB, nullable=True)
+    """
+    Structure:
+    {
+        "text": "full transcription",
+        "segments": [
+            {
+                "start": 0.0,
+                "end": 2.4,
+                "text": "segment text",
+                "confidence": 0.98,
+                "words": [
+                    {"word": "example", "start": 0.0, "end": 0.4, "confidence": 0.99}
+                ]
+            }
+        ]
+    }
+    """
+
     def __repr__(self):
         """String representation of the Video model"""
         return f"<Video(id={self.id}, filename='{self.filename}', status='{self.status}')>"
