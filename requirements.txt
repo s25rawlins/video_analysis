@@ -5,3 +5,7 @@ boto3
 sqlalchemy
 psycopg2-binary
 pydantic
+nltk
+spacy
+vaderSentiment
+openai-whisper
