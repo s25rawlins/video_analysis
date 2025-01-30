@@ -5,6 +5,7 @@ from app.services.transcription import TranscriptionService
 from app.crud.video import VideoRepository
 from app.db.session import get_db
 from app.models.video import Video, ProcessingStatus
+from app.services.nlp import NLPService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -62,6 +63,7 @@ async def upload_video(
 async def transcribe_video(
         video_id: int,
         transcription_service: TranscriptionService = Depends(TranscriptionService),
+        nlp_service: NLPService = Depends(NLPService),
         db: Session = Depends(get_db)
 ):
     video = db.query(Video).filter(Video.id == video_id).first()
@@ -74,6 +76,17 @@ async def transcribe_video(
 
         # Now returns detailed transcription
         transcription_details = await transcription_service.process_video(video.s3_url)
+
+        # Add NLP analysis
+        full_text_analysis = nlp_service.analyze_text(transcription_details["text"])
+        segment_analysis = nlp_service.analyze_segments(transcription_details["segments"])
+
+        analysis_results = {
+            "full_text": full_text_analysis,
+            "segments": segment_analysis
+        }
+
+        transcription_details["analysis"] = analysis_results
 
         video = await VideoRepository.update_transcription(db, video_id, transcription_details)
 
